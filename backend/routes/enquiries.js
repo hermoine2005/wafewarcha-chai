@@ -1,0 +1,10 @@
+const r = require('express').Router();
+const c = require('../controllers/enquiryController');
+const { protect, adminOnly } = require('../middleware/auth');
+r.post('/', protect, c.create);
+r.get('/mine', protect, c.mine);
+r.get('/', protect, adminOnly, c.all);
+r.get('/:id', protect, adminOnly, c.one);
+r.put('/:id', protect, adminOnly, c.update);
+r.delete('/:id', protect, adminOnly, c.remove);
+module.exports = r;
