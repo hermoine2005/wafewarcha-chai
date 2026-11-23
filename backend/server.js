@@ -5,6 +5,12 @@ const connectDB = require('./config/db');
 const crud = require('./utils/crud');
 const { notFound, errorHandler } = require('./middleware/error');
 
+const app = express();
+
+const origins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((s) => s.trim().replace(/\/$/, ''));
+
 app.use(cors({
   origin: (origin, cb) =>
     (!origin || origins.includes(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin))
@@ -32,6 +38,13 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-if (!process.env.JWT_SECRET) { console.error('JWT_SECRET is not set'); process.exit(1); }
-connectDB().then(() => app.listen(PORT, () => console.log(`API running on port ${PORT}`)))
-  .catch((e) => { console.error('Startup failed:', e.message); process.exit(1); });
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET is not set');
+  process.exit(1);
+}
+connectDB()
+  .then(() => app.listen(PORT, () => console.log(`API running on port ${PORT}`)))
+  .catch((e) => {
+    console.error('Startup failed:', e.message);
+    process.exit(1);
+  });
