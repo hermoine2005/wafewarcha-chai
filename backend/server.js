@@ -5,10 +5,11 @@ const connectDB = require('./config/db');
 const crud = require('./utils/crud');
 const { notFound, errorHandler } = require('./middleware/error');
 
-const app = express();
-const origins = (process.env.CLIENT_URL || 'http://localhost:5173').split(',').map((s) => s.trim().replace(/\/$/, ''));
 app.use(cors({
-  origin: (origin, cb) => (!origin || origins.includes(origin) ? cb(null, true) : cb(new Error('Origin not allowed by CORS'))),
+  origin: (origin, cb) =>
+    (!origin || origins.includes(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin))
+      ? cb(null, true)
+      : cb(new Error('Origin not allowed by CORS')),
   credentials: true,
 }));
 app.use(express.json({ limit: '1mb' }));
